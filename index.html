@@ -9,27 +9,30 @@
   * {
     box-sizing: border-box;
   }
-
-  body {
-    margin: 0;
-    padding: 0;
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    overflow-x: hidden;
-    padding-top: 40px;
-    padding-bottom: 0;
-  }
-
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    width: calc(100% - 10px);
-    height: calc(100% - 10px);
-    margin: 5px;
-    padding: 0;
-  }
+    
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+    }
+    
+    body {
+      padding-top: 40px; /* আপনি চাইলে কমাতে পারেন */
+    }
+    
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
 
   .player-container {
     position: relative;
