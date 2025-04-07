@@ -1,118 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium HLS Video Player</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-        body {
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Premium HLS Video Player</title>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-        .player-container {
-            position: relative;
-            width: 90%;
-            max-width: 900px;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-            background-color: #000;
-            border: 2px solid #00c6ff;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow-x: hidden;
+      padding-top: 80px; /* space for fixed header */
+    }
 
-        .player-container:hover {
-            transform: scale(1.01);
-            box-shadow: 0 12px 36px rgba(0, 198, 255, 0.6);
-        }
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 20px 0;
+      background: linear-gradient(145deg, #141e30, #243b55);
+      text-align: center;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    }
 
-        video {
-            width: 100%;
-            height: auto;
-            display: block;
-            background-color: #000;
-        }
-    </style>
+    header h1 {
+      font-size: 2.2rem;
+      color: #fff;
+      text-shadow: 2px 2px 5px #000, 0 0 10px #00c6ff;
+      letter-spacing: 2px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .player-container {
+      position: relative;
+      width: 90%;
+      max-width: 900px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      background-color: #000;
+      border: 2px solid #00c6ff;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .player-container:hover {
+      transform: scale(1.01);
+      box-shadow: 0 12px 36px rgba(0, 198, 255, 0.6);
+    }
+
+    video {
+      width: 100%;
+      height: auto;
+      display: block;
+      background-color: #000;
+    }
+
+    .title {
+      margin-top: 20px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      background: linear-gradient(45deg, #ff416c, #ff4b2b, #00c6ff, #7d5fff, #00ff87);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: colorChange 6s ease infinite;
+      text-align: center;
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    @keyframes colorChange {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+  </style>
 </head>
 <body>
+
+  <header>
+    <h1>Premium Video Player</h1>
+  </header>
+
+  <div class="container">
     <div class="player-container">
-        <video id="videoPlayer" controls autoplay></video>
+      <video id="videoPlayer" controls autoplay></video>
     </div>
+    <div class="title">WOODcraft</div>
+  </div>
 
-    <script>
-        let hls = null;
+  <script>
+    let hls = null;
 
-        function loadVideo(streamUrl) {
-            const video = document.getElementById('videoPlayer');
-            const currentTime = video.currentTime;
-            const wasPlaying = !video.paused;
+    function loadVideo(streamUrl) {
+      const video = document.getElementById('videoPlayer');
+      const currentTime = video.currentTime;
+      const wasPlaying = !video.paused;
 
-            if (Hls.isSupported()) {
-                if (hls) hls.destroy();
+      if (Hls.isSupported()) {
+        if (hls) hls.destroy();
 
-                hls = new Hls({
-                    xhrSetup: function(xhr, url) {
-                        xhr.open('GET', url, true);
-                        xhr.withCredentials = false;
-                    }
-                });
+        hls = new Hls({
+          xhrSetup: function(xhr, url) {
+            xhr.open('GET', url, true);
+            xhr.withCredentials = false;
+          }
+        });
 
-                hls.on(Hls.Events.ERROR, function(event, data) {
-                    if (data.fatal) {
-                        console.error('Error loading video:', data);
-                    }
-                });
+        hls.on(Hls.Events.ERROR, function(event, data) {
+          if (data.fatal) {
+            console.error('Error loading video:', data);
+          }
+        });
 
-                hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                    video.currentTime = currentTime;
-                    if (wasPlaying) {
-                        video.play().catch(() => {
-                            console.log('Click play to start');
-                        });
-                    }
-                });
+        hls.on(Hls.Events.MANIFEST_PARSED, function() {
+          video.currentTime = currentTime;
+          if (wasPlaying) {
+            video.play().catch(() => {
+              console.log('Click play to start');
+            });
+          }
+        });
 
-                hls.loadSource(streamUrl);
-                hls.attachMedia(video);
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = streamUrl;
-                video.addEventListener('loadedmetadata', function() {
-                    video.currentTime = currentTime;
-                    if (wasPlaying) {
-                        video.play().catch(() => {
-                            console.log('Click play to start');
-                        });
-                    }
-                });
-            } else {
-                console.error('HLS not supported in this browser');
-            }
-        }
+        hls.loadSource(streamUrl);
+        hls.attachMedia(video);
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = streamUrl;
+        video.addEventListener('loadedmetadata', function() {
+          video.currentTime = currentTime;
+          if (wasPlaying) {
+            video.play().catch(() => {
+              console.log('Click play to start');
+            });
+          }
+        });
+      } else {
+        console.error('HLS not supported in this browser');
+      }
+    }
 
-        function initPlayer() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const streamUrl = urlParams.get('start');
+    function initPlayer() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const streamUrl = urlParams.get('start');
 
-            if (!streamUrl) {
-                console.error('No video URL provided');
-                return;
-            }
+      if (!streamUrl) {
+        console.error('No video URL provided');
+        return;
+      }
 
-            loadVideo(streamUrl);
-        }
+      loadVideo(streamUrl);
+    }
 
-        window.addEventListener('load', initPlayer);
-    </script>
+    window.addEventListener('load', initPlayer);
+  </script>
+
 </body>
 </html>
